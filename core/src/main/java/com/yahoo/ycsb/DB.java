@@ -134,4 +134,26 @@ public abstract class DB
 	 * @return Zero on success, a non-zero error code on error.  See this class's description for a discussion of error codes.
 	 */
 	public abstract int delete(String table, String key);
+	
+    /**
+     * Starts a new transaction. All operations performed until abortTransaction() or commitTransaction() are called
+     * belong to the same transaction.
+     */
+    public int startTransaction() {
+        return 0;
+    }
+
+    /**
+     * Commits the current transaction.
+     */
+    public int commitTransaction() {
+        return 0;
+    }
+
+    /**
+     * Aborts the current transaction.
+     */
+    public int abortTransaction() {
+        return 0;
+    }
 }
