@@ -14,8 +14,8 @@
     This is the top level project that builds, packages the core and all the DB bindings for YCSB infrastructure.
   </description>
   <dependencies>
-    <!-- voldemort -->
-    <dependency>
+   <!-- 
+ voldemort    <dependency>
       <groupId>checkstyle</groupId>
       <artifactId>checkstyle</artifactId>
       <version>5.0</version>
@@ -30,6 +30,7 @@
       <artifactId>google-collections</artifactId>
       <version>1.0</version>
     </dependency>
+ -->
     <!--
     Nail down slf4j version to 1.6 so that it defaults to no-op logger.
     http://www.slf4j.org/codes.html#StaticLoggerBinder
@@ -60,21 +61,27 @@
 
   <modules>
     <!--module>build-tools</module-->
-    <module>cassandra</module>
+   <!--  <module>cassandra</module> -->
     <module>core</module>
-    <module>hbase</module>
+<!--    <module>hbase</module> 
     <module>hypertable</module>
     <module>dynamodb</module>
     <module>elasticsearch</module>
+ -->
     <!--<module>gemfire</module>-->
+<!-- 
     <module>infinispan</module>
     <module>jdbc</module>
     <module>mapkeeper</module>
     <module>mongodb</module>
     <module>orientdb</module>
+ -->
+ 	<module>omid</module>
     <!--module>nosqldb</module-->
+<!-- 
     <module>redis</module>
     <module>voldemort</module>
+ -->
     <module>distribution</module>
   </modules>
 
