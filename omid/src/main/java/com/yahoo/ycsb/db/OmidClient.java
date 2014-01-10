@@ -54,6 +54,13 @@ import com.yahoo.ycsb.DBException;
  */
 public class OmidClient extends com.yahoo.ycsb.DB {
 
+    private final class MockHTableFactory implements com.yahoo.omid.transaction.HTableFactory {
+        @Override
+        public HTableInterface create(Configuration conf, byte[] tableName) throws IOException {
+            return new MockHTable(conf, tableName);
+        }
+    }
+
     private static final Logger LOG = LoggerFactory.getLogger(OmidClient.class);
 
     // BFC: Change to fix broken build (with HBase 0.20.6)
@@ -78,6 +85,8 @@ public class OmidClient extends com.yahoo.ycsb.DB {
 
     public static final Object tableLock = new Object();
 
+    private MockHTableFactory mockHTableFactory = new MockHTableFactory();
+
     /**
      * Initialize any state for this DB. Called once per DB instance; there is one DB instance per client thread.
      */
@@ -96,13 +105,7 @@ public class OmidClient extends com.yahoo.ycsb.DB {
         _columnFamilyBytes = Bytes.toBytes(_columnFamily);
 
         try {
-            transactionManager = new TransactionManager(config, new com.yahoo.omid.transaction.HTableFactory() {
-
-                @Override
-                public HTableInterface create(Configuration conf, byte[] tableName) throws IOException {
-                    return new MockHTable(conf, tableName);
-                }
-            });
+            transactionManager = new TransactionManager(config, mockHTableFactory);
         } catch (IOException e) {
             throw new DBException(e);
         }
@@ -124,7 +127,7 @@ public class OmidClient extends com.yahoo.ycsb.DB {
 
     public void getHTable(String table) throws IOException {
         synchronized (tableLock) {
-            _hTable = new TTable(new MockHTable(config, Bytes.toBytes(table)));
+            _hTable = new TTable(mockHTableFactory.create(config, Bytes.toBytes(table)));
         }
 
     }
