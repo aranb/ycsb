@@ -40,6 +40,7 @@ import org.apache.hadoop.hbase.util.Bytes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.yahoo.omid.transaction.HBaseTransactionManager;
 import com.yahoo.omid.transaction.RollbackException;
 import com.yahoo.omid.transaction.TTable;
 import com.yahoo.omid.transaction.Transaction;
@@ -54,12 +55,12 @@ import com.yahoo.ycsb.DBException;
  */
 public class OmidClient extends com.yahoo.ycsb.DB {
 
-    private final class MockHTableFactory implements com.yahoo.omid.transaction.HTableFactory {
-        @Override
-        public HTableInterface create(Configuration conf, byte[] tableName) throws IOException {
-            return new MockHTable(conf, tableName);
-        }
-    }
+//    private final class MockHTableFactory implements com.yahoo.omid.transaction.HTableFactory {
+//        @Override
+//        public HTableInterface create(Configuration conf, byte[] tableName) throws IOException {
+//            return new MockHTable(conf, tableName);
+//        }
+//    }
 
     private static final Logger LOG = LoggerFactory.getLogger(OmidClient.class);
 
@@ -85,13 +86,12 @@ public class OmidClient extends com.yahoo.ycsb.DB {
 
     public static final Object tableLock = new Object();
 
-    private MockHTableFactory mockHTableFactory = new MockHTableFactory();
+//    private MockHTableFactory mockHTableFactory = new MockHTableFactory();
 
     /**
      * Initialize any state for this DB. Called once per DB instance; there is one DB instance per client thread.
      */
     public void init() throws DBException {
-        Transaction t;
         if ((getProperties().getProperty("debug") != null)
                 && (getProperties().getProperty("debug").compareTo("true") == 0)) {
             _debug = true;
@@ -105,8 +105,11 @@ public class OmidClient extends com.yahoo.ycsb.DB {
         _columnFamilyBytes = Bytes.toBytes(_columnFamily);
 
         try {
-            transactionManager = new TransactionManager(config, mockHTableFactory);
-        } catch (IOException e) {
+//            transactionManager = new TransactionManager(config, mockHTableFactory);
+        	transactionManager = HBaseTransactionManager.newBuilder()
+                    									.withConfiguration(config)
+                    									.build();
+        } catch (Exception e) {
             throw new DBException(e);
         }
     }
@@ -127,7 +130,7 @@ public class OmidClient extends com.yahoo.ycsb.DB {
 
     public void getHTable(String table) throws IOException {
         synchronized (tableLock) {
-            _hTable = new TTable(mockHTableFactory.create(config, Bytes.toBytes(table)));
+            _hTable = new TTable(config, table);
         }
 
     }
@@ -167,7 +170,9 @@ public class OmidClient extends com.yahoo.ycsb.DB {
     public int abortTransaction() {
         try {
             transactionManager.rollback(transactionState);
-        } finally {
+        } catch (TransactionException e) {
+            return Abort;
+		} finally {
             transactionState = null;
         }
         return Abort;

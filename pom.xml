@@ -45,7 +45,8 @@
   <!-- Properties Management -->
   <properties>
     <maven.assembly.version>2.2.1</maven.assembly.version>
-    <hbase.version>0.92.1</hbase.version>
+    <!-- hbase.version>0.94.5</hbase.version -->
+    <hbase.version>0.98.14-SNAPSHOT</hbase.version>
     <cassandra.version>0.7.0</cassandra.version>
     <infinispan.version>7.1.0.CR1</infinispan.version>
     <openjpa.jdbc.version>2.1.1</openjpa.jdbc.version>
@@ -63,8 +64,8 @@
     <!--module>build-tools</module-->
    <!--  <module>cassandra</module> -->
     <module>core</module>
-<!--    <module>hbase</module> 
-    <module>hypertable</module>
+    <module>hbase</module> 
+<!--    <module>hypertable</module>
     <module>dynamodb</module>
     <module>elasticsearch</module>
  -->
@@ -76,7 +77,7 @@
     <module>mongodb</module>
     <module>orientdb</module>
  -->
- 	<module>omid</module>
+  <module>omid</module> 
     <!--module>nosqldb</module-->
 <!-- 
     <module>redis</module>

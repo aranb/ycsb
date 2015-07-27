@@ -1,1 +1,7 @@
 /elasticsearch/target/
+*/.settings/*
+*/.project
+.settings/*
+.project
+*/.DS_Store
+.classpath

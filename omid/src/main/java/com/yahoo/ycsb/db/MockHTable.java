@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+/*
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HTableDescriptor;
 import org.apache.hadoop.hbase.client.Append;
@@ -240,3 +241,5 @@ public class MockHTable implements HTableInterface {
     }
 
 }
+
+*/
