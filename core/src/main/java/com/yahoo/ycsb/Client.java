@@ -214,6 +214,9 @@ class ClientThread extends Thread
 		   if ( (_target>0) && (_target<=1.0) ) 
 		   {
 		      sleep(Utils.random().nextInt((int)(1.0/_target)));
+		   } else // try to spread the start even when _target==0, to prevent failures
+		   {
+			   sleep(_threadid*20);
 		   }
 		}
 		catch (InterruptedException e)
@@ -236,6 +239,11 @@ class ClientThread extends Thread
 					}
 
 					_opsdone++;
+
+//					if (_workload.doTransaction(_db,_workloadstate))
+//					{
+//						_opsdone++;
+//					}
 
 					//throttle the operations
 					if (_target>0)
