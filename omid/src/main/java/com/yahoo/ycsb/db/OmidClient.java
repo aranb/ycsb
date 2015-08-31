@@ -66,7 +66,7 @@ public class OmidClient extends com.yahoo.ycsb.DB {
 
     // BFC: Change to fix broken build (with HBase 0.20.6)
     // private static final Configuration config = HBaseConfiguration.create();
-    private static final Configuration config = HBaseConfiguration.create(); // new HBaseConfiguration();
+    protected static final Configuration config = HBaseConfiguration.create(); // new HBaseConfiguration();
 
     public boolean _debug = false;
 
@@ -75,7 +75,7 @@ public class OmidClient extends com.yahoo.ycsb.DB {
     public String _columnFamily = "";
     public byte _columnFamilyBytes[];
     private TransactionManager transactionManager;
-    private Transaction transactionState = null;
+    protected Transaction transactionState = null;
 
     public static final int Ok = 0;
     public static final int ServerError = -1;
