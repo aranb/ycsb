@@ -358,7 +358,7 @@ public class OmidClient extends com.yahoo.ycsb.DB {
         if (_debug) {
             System.out.println("Setting up put for key: " + key);
         }
-        Put p = new Put(Bytes.toBytes(key));
+        Put p = transactionState == null ? new Put(Bytes.toBytes(key),0) : new Put(Bytes.toBytes(key));
         for (Map.Entry<String, ByteIterator> entry : values.entrySet()) {
             if (_debug) {
                 System.out.println("Adding field/value " + entry.getKey() + "/" + entry.getValue() + " to put request");
