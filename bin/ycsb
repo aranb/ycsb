@@ -29,6 +29,7 @@ COMMANDS = {
 
 DATABASES = {
     "accumulo"     : "com.yahoo.ycsb.db.AccumuloClient",
+    "amos"		   : "com.yahoo.ycsb.db.AmosClient",
     "aerospike"    : "com.yahoo.ycsb.db.AerospikeClient",
     "basic"        : "com.yahoo.ycsb.BasicDB",
     "cassandra-7"  : "com.yahoo.ycsb.db.CassandraClient7",
@@ -49,7 +50,7 @@ DATABASES = {
     "mongodb"      : "com.yahoo.ycsb.db.MongoDbClient",
     "mongodb-async": "com.yahoo.ycsb.db.AsyncMongoDbClient",
     "nosqldb"      : "com.yahoo.ycsb.db.NoSqlDbClient",
-    "omid"         : "com.yahoo.ycsb.db.OmidClient",
+    "omid"         : "com.yahoo.ycsb.db.AmosClient",
     "orientdb"     : "com.yahoo.ycsb.db.OrientDBClient",
     "redis"        : "com.yahoo.ycsb.db.RedisClient",
     "tarantool"    : "com.yahoo.ycsb.db.TarantoolClient",
