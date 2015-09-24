@@ -33,6 +33,7 @@ import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.util.Bytes;
 
 import com.yahoo.omid.transaction.STable;
+import com.yahoo.omid.tsoclient.TSOClient.AbortException;
 import com.yahoo.ycsb.ByteArrayByteIterator;
 import com.yahoo.ycsb.ByteIterator;
 import com.yahoo.ycsb.DBException;
@@ -48,6 +49,7 @@ public class AmosClient extends OmidClient {
      * Initialize any state for this DB. Called once per DB instance; there is one DB instance per client thread.
      */
     public void init() throws DBException {
+    	super.init();
     }
 
      /**
@@ -80,7 +82,7 @@ public class AmosClient extends OmidClient {
         try {
             if (_debug) {
                 System.out.println("Doing Singleton read from HBase columnfamily " + _columnFamily);
-                System.out.println("Doing read for key: " + key);
+                System.out.println("Doing Singleton read for key: " + key);
             }
             Get g = new Get(Bytes.toBytes(key));
             if (fields == null) {
@@ -91,7 +93,7 @@ public class AmosClient extends OmidClient {
                 }
             }
             if (transactionState == null) {
-                r = ((STable) _hTable.getHTable()).singletonGet(g);
+                r = ((STable) _hTable).singletonGet(g);
             } else {
             	System.err.println("Client performed Singleton Read while in transaction context");
             	return SingletonWhileTxnContext;
@@ -143,15 +145,21 @@ public class AmosClient extends OmidClient {
         }
         Put p = new Put(Bytes.toBytes(key));
         for (Map.Entry<String, ByteIterator> entry : values.entrySet()) {
+        	byte[] valueBytes = entry.getValue().toArray();
             if (_debug) {
-                System.out.println("Adding field/value " + entry.getKey() + "/" + entry.getValue() + " to put request");
+                System.out.println("Adding field/value " + entry.getKey() + "/" + Bytes.toString(valueBytes) + " to put request");
             }
-            p.add(_columnFamilyBytes, Bytes.toBytes(entry.getKey()), entry.getValue().toArray());
+            p.add(_columnFamilyBytes, Bytes.toBytes(entry.getKey()), valueBytes);
         }
 
         try {
             if (transactionState == null) {
-                ((STable) _hTable.getHTable()).singletonPut(p);
+                try {
+					((STable) _hTable).singletonPut(p);
+				} catch (AbortException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
             } else {
             	System.err.println("Client performed Singleton Update while in transaction context");
             	return SingletonWhileTxnContext;
@@ -263,7 +271,7 @@ public class AmosClient extends OmidClient {
 
     }
      
-     
+     @Override
      public void getHTable(String table) throws IOException {
          synchronized (tableLock) {
              _hTable = new STable(config, table);

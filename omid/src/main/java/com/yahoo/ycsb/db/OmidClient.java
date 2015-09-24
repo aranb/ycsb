@@ -28,6 +28,7 @@ import java.util.Vector;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
+import org.apache.hadoop.hbase.HConstants;
 import org.apache.hadoop.hbase.KeyValue;
 import org.apache.hadoop.hbase.client.Delete;
 import org.apache.hadoop.hbase.client.Get;
@@ -36,6 +37,7 @@ import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.ResultScanner;
 import org.apache.hadoop.hbase.client.Scan;
+import org.apache.hadoop.hbase.regionserver.TransactionTimestamp;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -358,12 +360,14 @@ public class OmidClient extends com.yahoo.ycsb.DB {
         if (_debug) {
             System.out.println("Setting up put for key: " + key);
         }
-        Put p = transactionState == null ? new Put(Bytes.toBytes(key),0) : new Put(Bytes.toBytes(key));
+        Put p = transactionState == null ? new Put(Bytes.toBytes(key),TransactionTimestamp.SINGLETON_TIMESTAMP) : new Put(Bytes.toBytes(key));
         for (Map.Entry<String, ByteIterator> entry : values.entrySet()) {
+        	byte[] valueBytes = entry.getValue().toArray();
             if (_debug) {
-                System.out.println("Adding field/value " + entry.getKey() + "/" + entry.getValue() + " to put request");
+            	System.out.println("Adding field/value " + entry.getKey() + "/" + Bytes.toString(valueBytes) + " to put request");
+                
             }
-            p.add(_columnFamilyBytes, Bytes.toBytes(entry.getKey()), entry.getValue().toArray());
+            p.add(_columnFamilyBytes, Bytes.toBytes(entry.getKey()), HConstants.LATEST_TIMESTAMP ,valueBytes);
         }
 
         try {
