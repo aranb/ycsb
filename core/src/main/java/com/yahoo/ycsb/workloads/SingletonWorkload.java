@@ -65,7 +65,7 @@ public class SingletonWorkload extends TransactionalWorkload {
 		{
 			singletonoperationchooser.addValue(readproportion,"READ");
 		}
-		singletonoperationchooser.addValue(readproportion,"UPDATE");
+		singletonoperationchooser.addValue(1.0-readproportion,"UPDATE");
     }
 
     @Override
@@ -85,6 +85,32 @@ public class SingletonWorkload extends TransactionalWorkload {
     	}
     	return super.doTransaction(db, threadstate);
     }
+   
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean doInsert(DB db, Object threadstate)
+	{
+		int keynum=keysequence.nextInt();
+		String dbkey = buildKeyName(keynum);
+		HashMap<String, ByteIterator> values = buildValues();
+		
+		int res = db.startTransaction();
+        
+        if (res != 0) // in case getting the timestamp fails - don't do the transaction
+        	return false; 
+        
+        res = db.insert(table,dbkey,values);
+        
+        db.commitTransaction();
+		
+		if (res == 0)
+			return true;
+		
+		return false;
+	}
+
 
 	private boolean doSingletonTransaction(DB db, Object threadstate) {
 		String op=singletonoperationchooser.nextString();
