@@ -141,7 +141,7 @@ public class AmosClient extends OmidClient {
         }
 
         if (_debug) {
-            System.out.println("Setting up put for key: " + key);
+            System.out.println("Setting up Singleton put for key: " + key);
         }
         Put p = new Put(Bytes.toBytes(key));
         for (Map.Entry<String, ByteIterator> entry : values.entrySet()) {

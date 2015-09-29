@@ -235,6 +235,7 @@ class ClientThread extends Thread
 
 					if (!_workload.doTransaction(_db,_workloadstate))
 					{
+						System.err.println("Thread" + _threadid + "terminated");
 						break;
 					}
 
