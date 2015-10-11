@@ -41,9 +41,12 @@ public class SingletonWorkload extends TransactionalWorkload {
     
     public static final String SINGLETON_PROPORTION_PROPERTY = "singletonproportion";
     public static final String SINGLETON_PROPORTION_PROPERTY_DEFAULT = "0.5";
+    public static final String TRUE_SINGLETON_PROPERTY = "truesingleton";
+    public static final String TRUE_SINGLETON_PROPERTY_DEFAULT = "true";
 
     DiscreteGenerator singletonChooser;
     DiscreteGenerator singletonoperationchooser;
+    boolean _trueSingleton;
     
     @Override
     public void init(Properties p) throws WorkloadException {
@@ -66,6 +69,8 @@ public class SingletonWorkload extends TransactionalWorkload {
 			singletonoperationchooser.addValue(readproportion,"READ");
 		}
 		singletonoperationchooser.addValue(1.0-readproportion,"UPDATE");
+		
+		_trueSingleton = Boolean.parseBoolean(p.getProperty(TRUE_SINGLETON_PROPERTY, TRUE_SINGLETON_PROPERTY_DEFAULT));
     }
 
     @Override
@@ -150,7 +155,17 @@ public class SingletonWorkload extends TransactionalWorkload {
 			// update a random field
 			values = buildUpdate();
 		}
-
+		
+		if (_trueSingleton)
+			db.singletonUpdate(table, keyname,values);
+		else {
+			int res = db.startTransaction();
+	        
+	        if (res != 0) // in case getting the timestamp fails - don't do the transaction
+	        	return; 
+	        db.update(table,keyname,values);
+	        db.commitTransaction();
+		}
 		db.singletonUpdate(table, keyname,values);
 	}
 
@@ -169,8 +184,17 @@ public class SingletonWorkload extends TransactionalWorkload {
 			fields = new HashSet<String>();
 			fields.add(fieldname);
 		}
-
-		db.singletonRead(table, keyname, fields, new HashMap<String, ByteIterator>());
+		
+		if (_trueSingleton)
+			db.singletonRead(table, keyname, fields, new HashMap<String, ByteIterator>());
+		else {
+			int res = db.startTransaction();
+	        
+	        if (res != 0) // in case getting the timestamp fails - don't do the transaction
+	        	return; 
+	        db.read(table,keyname,fields,new HashMap<String,ByteIterator>());
+	        db.commitTransaction();
+		}
 	}
 
 }
