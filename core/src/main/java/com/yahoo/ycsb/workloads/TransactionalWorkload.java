@@ -21,6 +21,8 @@ import java.util.Properties;
 
 import com.yahoo.ycsb.DB;
 import com.yahoo.ycsb.WorkloadException;
+import com.yahoo.ycsb.generator.ConstantIntegerGenerator;
+import com.yahoo.ycsb.generator.DiscreteGenerator;
 import com.yahoo.ycsb.generator.IntegerGenerator;
 import com.yahoo.ycsb.generator.UniformIntegerGenerator;
 import com.yahoo.ycsb.generator.ZipfianGenerator;
@@ -60,6 +62,8 @@ public class TransactionalWorkload extends CoreWorkload {
             transactionlength = new UniformIntegerGenerator(1, maxtransactionlength);
         } else if (transactionlengthdistrib.equals("zipfian")) {
             transactionlength = new ZipfianGenerator(1, maxtransactionlength);
+        } else if (transactionlengthdistrib.equals("constant")) {
+            transactionlength = new ConstantIntegerGenerator(maxtransactionlength); 
         } else {
             throw new WorkloadException("Distribution \"" + transactionlengthdistrib
                     + "\" not allowed for transaction length");
@@ -74,7 +78,11 @@ public class TransactionalWorkload extends CoreWorkload {
         int transactions = transactionlength.nextInt();
 
         long st = System.nanoTime();
-        db.startTransaction();
+        int res = db.startTransaction();
+        
+        if (res != 0) // in case getting the timestamp fails - don't do the transaction
+        	return false; 
+        
         for (int i = 0; i < transactions; ++i) {
             super.doTransaction(db, threadstate);
         }

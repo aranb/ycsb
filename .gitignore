@@ -3,5 +3,9 @@
 */.project
 .settings/*
 .project
-*/.DS_Store
+**/.DS_Store
 .classpath
+*log.*
+*.log
+/distribution/target/
+**/*.class
