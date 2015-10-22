@@ -166,7 +166,6 @@ public class SingletonWorkload extends TransactionalWorkload {
 	        db.update(table,keyname,values);
 	        db.commitTransaction();
 		}
-		db.singletonUpdate(table, keyname,values);
 	}
 
 	private void doSingletonTransactionRead(DB db) {
