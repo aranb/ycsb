@@ -22,6 +22,7 @@ import java.util.HashSet;
 import java.util.Properties;
 
 import com.yahoo.ycsb.ByteIterator;
+import com.yahoo.ycsb.Client;
 import com.yahoo.ycsb.DB;
 import com.yahoo.ycsb.WorkloadException;
 import com.yahoo.ycsb.generator.DiscreteGenerator;
@@ -97,16 +98,12 @@ public class SingletonWorkload extends TransactionalWorkload {
     @Override
     public boolean doInsert(DB db, Object threadstate)
 	{
-		int keynum=keysequence.nextInt();
-		String dbkey = buildKeyName(keynum);
-		HashMap<String, ByteIterator> values = buildValues();
-		
 		int res = db.startTransaction();
         
         if (res != 0) // in case getting the timestamp fails - don't do the transaction
         	return false; 
-        
-        res = db.insert(table,dbkey,values);
+        for (int i=0; i < Client.batchSize && res == 0; i++)
+        	res = db.insert(table,buildKeyName(keysequence.nextInt()),buildValues());
         
         db.commitTransaction();
 		

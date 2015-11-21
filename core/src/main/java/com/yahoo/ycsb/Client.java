@@ -150,6 +150,7 @@ class ClientThread extends Thread
 	Properties _props;
 
 
+	
 	/**
 	 * Constructor.
 	 * 
@@ -276,7 +277,7 @@ class ClientThread extends Thread
 						break;
 					}
 
-					_opsdone++;
+					_opsdone+=Client.batchSize;
 
 					//throttle the operations
 					if (_target>0)
@@ -325,7 +326,8 @@ class ClientThread extends Thread
  */
 public class Client
 {
-
+	public static final int batchSize = 100; 
+	
 	public static final String OPERATION_COUNT_PROPERTY="operationcount";
 
 	public static final String RECORD_COUNT_PROPERTY="recordcount";

@@ -45,10 +45,17 @@ public class AmosClient extends OmidClient {
 
 	public static final int SingletonWhileTxnContext = -4; // extend error reporting
 	
+	private boolean _autoFlush = true;
+	
     /**
      * Initialize any state for this DB. Called once per DB instance; there is one DB instance per client thread.
      */
     public void init() throws DBException {
+    	if ((getProperties().getProperty("autoFlush") != null)
+                && (getProperties().getProperty("autoFlush").compareTo("false") == 0)) {
+            _autoFlush = false;
+            System.out.println("autoFlush set to false");
+        }
     	super.init();
     }
 
@@ -275,6 +282,7 @@ public class AmosClient extends OmidClient {
      public void getHTable(String table) throws IOException {
          synchronized (tableLock) {
              _hTable = new STable(config, table);
+             _hTable.getHTable().setAutoFlushTo(_autoFlush);
          }
 
      }
