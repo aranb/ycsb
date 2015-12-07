@@ -44,6 +44,7 @@ import com.yahoo.ycsb.DBException;
 public class AmosClient extends OmidClient {
 
 	public static final int SingletonWhileTxnContext = -4; // extend error reporting
+	public static final int SingletonAbort = -5;
 	
 	private boolean _autoFlush = true;
 	
@@ -166,6 +167,7 @@ public class AmosClient extends OmidClient {
 				} catch (AbortException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
+					return SingletonAbort;
 				}
             } else {
             	System.err.println("Client performed Singleton Update while in transaction context");

@@ -117,13 +117,14 @@ public class SingletonWorkload extends TransactionalWorkload {
 	private boolean doSingletonTransaction(DB db, Object threadstate) {
 		String op=singletonoperationchooser.nextString();
 
+		boolean res=false;
 		if (op.compareTo("READ")==0)
 		{
-			doSingletonTransactionRead(db);
+			res=doSingletonTransactionRead(db);
 		}
 		else if (op.compareTo("UPDATE")==0)
 		{
-			doSingletonTransactionUpdate(db);
+			res=doSingletonTransactionUpdate(db);
 		}
 		else
 		{
@@ -133,14 +134,15 @@ public class SingletonWorkload extends TransactionalWorkload {
 			System.exit(0);
 		}
 		
-		return true;
+		return res;
 		
 	}
 
-	private void doSingletonTransactionUpdate(DB db) {
+	private boolean doSingletonTransactionUpdate(DB db) {
 		// choose a random key
 		int keynum = nextKeynum();
-
+		int res = 0;
+		
 		String keyname = buildKeyName(keynum);
 
 		HashMap<String, ByteIterator> values;
@@ -154,20 +156,22 @@ public class SingletonWorkload extends TransactionalWorkload {
 		}
 		
 		if (_trueSingleton)
-			db.singletonUpdate(table, keyname,values);
+			res += db.singletonUpdate(table, keyname,values);
 		else {
-			int res = db.startTransaction();
+			res += db.startTransaction();
 	        
 	        if (res != 0) // in case getting the timestamp fails - don't do the transaction
-	        	return; 
+	        	return false;
 	        db.update(table,keyname,values);
-	        db.commitTransaction();
+	        res += db.commitTransaction();
 		}
+		return (0 == res);
 	}
 
-	private void doSingletonTransactionRead(DB db) {
+	private boolean doSingletonTransactionRead(DB db) {
 		//choose a random key
 		int keynum = nextKeynum();
+		int res = 0;
 
 		String keyname = buildKeyName(keynum);
 
@@ -182,15 +186,16 @@ public class SingletonWorkload extends TransactionalWorkload {
 		}
 		
 		if (_trueSingleton)
-			db.singletonRead(table, keyname, fields, new HashMap<String, ByteIterator>());
+			res += db.singletonRead(table, keyname, fields, new HashMap<String, ByteIterator>());
 		else {
-			int res = db.startTransaction();
+			res += db.startTransaction();
 	        
 	        if (res != 0) // in case getting the timestamp fails - don't do the transaction
-	        	return; 
+	        	return false; 
 	        db.read(table,keyname,fields,new HashMap<String,ByteIterator>());
-	        db.commitTransaction();
+	        res += db.commitTransaction();
 		}
+		return (0 == res);
 	}
 
 }
