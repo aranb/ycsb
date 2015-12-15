@@ -262,6 +262,8 @@ class ClientThread extends Thread
 							}
 
 						}
+					} else {
+						sleep(Utils.random().nextInt(2*_threadcount)); // add some delay to prevent thread synchronization
 					}
 				}
 			}
