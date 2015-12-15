@@ -189,7 +189,9 @@ public class DBWrapper extends DB
         long st = System.nanoTime();
         int res = _db.commitTransaction();
         long en = System.nanoTime();
-        _measurements.measure("COMMIT", (int) ((en - st) / 1000));
+        if (res == 1) { // measure only Commit responses latencies
+        	_measurements.measure("COMMIT", (int) ((en - st) / 1000));
+        }
         _measurements.reportReturnCode("COMMIT", res);
         return res;
     }
@@ -237,7 +239,9 @@ public class DBWrapper extends DB
 		long st=System.nanoTime();
 		int res=_db.singletonUpdate(table,key,values);
 		long en=System.nanoTime();
-		_measurements.measure("SINGLETON UPDATE",(int)((en-st)/1000));
+		if (res == 0) { // measure only Ok responses
+			_measurements.measure("SINGLETON UPDATE",(int)((en-st)/1000));
+		}
 		_measurements.reportReturnCode("SINGLETON UPDATE",res);
 		return res;
 	}	
