@@ -260,6 +260,12 @@ class ClientThread extends Thread
 							}
 
 						}
+					} else {
+//						try {
+//							sleep(Utils.random().nextInt(_threadcount)); // add some delay to prevent thread synchronization
+//						} catch (InterruptedException e) {
+//							// do nothing.
+//						}
 					}
 				}
 			}
