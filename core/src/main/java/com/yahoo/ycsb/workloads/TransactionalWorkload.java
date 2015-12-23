@@ -86,6 +86,9 @@ public class TransactionalWorkload extends CoreWorkload {
         for (int i = 0; i < transactions; ++i) {
             super.doTransaction(db, threadstate);
         }
+        // Add a read cycle at the end - for checking performance effect only
+        super.doTransactionRead(db);
+        
         db.commitTransaction();
 
         long en = System.nanoTime();

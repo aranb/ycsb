@@ -628,27 +628,6 @@ public class CoreWorkload extends Workload
 		}
 
 		db.update(table,keyname,values);
-		
-		
-		// Add a read cycle - just to check
-		HashSet<String> fields=null;
-
-		if (!readallfields)
-		{
-			//read a random field  
-			String fieldname="field"+fieldchooser.nextString();
-
-			fields=new HashSet<String>();
-			fields.add(fieldname);
-		}
-
-		db.read(table,keyname,fields,new HashMap<String,ByteIterator>());
-		try {
-			TimeUnit.MICROSECONDS.sleep(Utils.random().nextInt(8000));
-			//Thread.sleep(Utils.random().nextInt(10)); // add some delay to prevent thread synchronization
-		} catch (InterruptedException e) {
-			// do nothing.
-		}
 	}
 
 	public void doTransactionInsert(DB db)
