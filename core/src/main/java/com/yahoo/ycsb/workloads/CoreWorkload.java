@@ -18,6 +18,7 @@
 package com.yahoo.ycsb.workloads;
 
 import java.util.Properties;
+
 import com.yahoo.ycsb.*;
 import com.yahoo.ycsb.generator.CounterGenerator;
 import com.yahoo.ycsb.generator.DiscreteGenerator;
@@ -37,6 +38,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Vector;
+import java.util.concurrent.TimeUnit;
 
 /**
  * The core benchmark scenario. Represents a set of clients doing simple CRUD operations. The relative 
@@ -626,6 +628,27 @@ public class CoreWorkload extends Workload
 		}
 
 		db.update(table,keyname,values);
+		
+		
+		// Add a read cycle - just to check
+		HashSet<String> fields=null;
+
+		if (!readallfields)
+		{
+			//read a random field  
+			String fieldname="field"+fieldchooser.nextString();
+
+			fields=new HashSet<String>();
+			fields.add(fieldname);
+		}
+
+		db.read(table,keyname,fields,new HashMap<String,ByteIterator>());
+		try {
+			TimeUnit.MICROSECONDS.sleep(Utils.random().nextInt(8000));
+			//Thread.sleep(Utils.random().nextInt(10)); // add some delay to prevent thread synchronization
+		} catch (InterruptedException e) {
+			// do nothing.
+		}
 	}
 
 	public void doTransactionInsert(DB db)
