@@ -87,7 +87,7 @@ public class TransactionalWorkload extends CoreWorkload {
             super.doTransaction(db, threadstate);
         }
         // Add a read cycle at the end - for checking performance effect only
-        super.doTransactionRead(db);
+        //super.doTransactionRead(db);
         
         db.commitTransaction();
 
