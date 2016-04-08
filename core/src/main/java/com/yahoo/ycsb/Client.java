@@ -326,7 +326,7 @@ class ClientThread extends Thread
  */
 public class Client
 {
-	public static final int batchSize = 100; 
+	public static final int batchSize = 500; 
 	
 	public static final String OPERATION_COUNT_PROPERTY="operationcount";
 
