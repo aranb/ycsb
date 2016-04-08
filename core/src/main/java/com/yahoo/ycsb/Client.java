@@ -236,6 +236,7 @@ class ClientThread extends Thread
 
 					if (!_workload.doTransaction(_db,_workloadstate))
 					{
+						System.err.println("Thread" + _threadid + "terminated");
 						break;
 					}
 
@@ -281,7 +282,7 @@ class ClientThread extends Thread
 						break;
 					}
 
-					_opsdone++;
+					_opsdone+=Client.batchSize;
 
 					//throttle the operations
 					if (_target>0)
@@ -331,6 +332,9 @@ class ClientThread extends Thread
 public class Client
 {
 
+	
+	public static final int batchSize = 500; 
+	
 	public static final String OPERATION_COUNT_PROPERTY="operationcount";
 
 	public static final String RECORD_COUNT_PROPERTY="recordcount";

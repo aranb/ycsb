@@ -19,6 +19,7 @@ package com.yahoo.ycsb.workloads;
 
 import java.util.Properties;
 
+import com.yahoo.ycsb.Client;
 import com.yahoo.ycsb.DB;
 import com.yahoo.ycsb.WorkloadException;
 import com.yahoo.ycsb.generator.ConstantIntegerGenerator;
@@ -97,5 +98,26 @@ public class TransactionalWorkload extends CoreWorkload {
 
         return true;
     }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean doInsert(DB db, Object threadstate)
+	{
+		int res = db.startTransaction();
+        
+        if (res != 0) // in case getting the timestamp fails - don't do the transaction
+        	return false; 
+        for (int i=0; i < Client.batchSize && res == 0; i++)
+        	res = db.insert(table,buildKeyName(keysequence.nextInt()),buildValues());
+        
+        db.commitTransaction();
+		
+		if (res == 0)
+			return true;
+		
+		return false;
+	}
 
 }
