@@ -281,7 +281,7 @@ class ClientThread extends Thread
 					{
 						break;
 					}
-
+					
 					_opsdone+=Client.batchSize;
 
 					//throttle the operations

@@ -457,6 +457,7 @@ public class CoreWorkload extends Workload
 	 */
 	public boolean doInsert(DB db, Object threadstate)
 	{
+		/* Original code:
 		int keynum=keysequence.nextInt();
 		String dbkey = buildKeyName(keynum);
 		HashMap<String, ByteIterator> values = buildValues();
@@ -464,6 +465,17 @@ public class CoreWorkload extends Workload
 			return true;
 		else
 			return false;
+		*/
+		
+		// Aran's code (to support batch insert
+		int res = 0;
+		for (int i=0; i < Client.batchSize && res == 0; i++)
+        	res = db.insert(table,buildKeyName(keysequence.nextInt()),buildValues());
+		
+		if (res == 0)
+			return true;
+		
+		return false;
 	}
 
 	/**
